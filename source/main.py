@@ -96,7 +96,7 @@ class MainApp(FloatLayout):
                 shutil.move("temp" + os.sep + song_file, new_songID + os.sep + song_file)
             if song_file[-4:] == ".mid":
                 self.status_label.text = "Creating MIDI file with new tempo..."
-                tempo = self.percentage(int(self.speed_input.text), functions.get_tempo("temp" + os.sep + "song.desc"))
+                tempo = self.percentage(int(self.speed_input.text), float(functions.get_tempo("temp" + os.sep + "song.desc")))
                 functions.change_midi_speed("temp" + os.sep + song_file, new_songID + os.sep + song_file, tempo)
             if song_file[-5:] == ".mogg":
                 self.status_label.text = "Modifying " + song_file + " with new tempo..."
