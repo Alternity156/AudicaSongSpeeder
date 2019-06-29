@@ -1,0 +1,10 @@
+kivy - https://kivy.org/
+python-midi - https://github.com/vishnubob/python-midi
+ffmpeg - https://ffmpeg.org/
+ogg2mogg - Onyxite (https://github.com/mtolly)
+the idea behind the mogg2ogg function - Onyxite (https://github.com/mtolly)
+
+This tool (and possibly many other sweet Audica tools) could not have been made
+without Onyxite's insight and his ogg2mogg software.
+
+The rest is made by me, Alternity.

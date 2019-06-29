@@ -1,4 +1,3 @@
-from zipfile import ZipFile
 from subprocess import check_output
 
 import os
@@ -29,6 +28,8 @@ audica_songlist = ["addictedtoamemory.audica",
                    "splinter.audica",
                    "synthesized.audica",
                    "thespace.audica",
+                   "timeforcrime.audica",
+                   "tothestars.audica",
                    "tutorial.audica"]
                  
 class desc():

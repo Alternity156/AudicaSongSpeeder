@@ -41,7 +41,7 @@ class MainApp(FloatLayout):
     speed_input = IntInput(text="100", pos=(50,260), size_hint=(.1,.1))
     speed_percent_label = Label(text="%", pos=(-147,130))
     
-    filename_label = Label(text="", pos=(0,0))
+    filename_label = Label(text="Drag and drop an .audica file...", pos=(0,0))
     
     status_label = Label(text="", pos=(0,-50))
     
@@ -52,6 +52,8 @@ class MainApp(FloatLayout):
     selected_file = ""
     
     magician_mode = False
+    
+    tempo = 0
 
     def __init__(self, **kwargs):
         super(MainApp, self).__init__(**kwargs)
@@ -68,6 +70,9 @@ class MainApp(FloatLayout):
         self.start_button.bind(on_release=lambda i:Thread(target=self.start_button_handler).start())
         
     def start_button_handler(self):
+        if int(self.speed_input.text) == 100:
+            self.status_label.text = "Speed must not be set to 100%"
+            return
         if int(self.speed_input.text) < 50 or int(self.speed_input.text) > 200:
             self.status_label.text = "Speed must be between 50% and 200%"
             return
@@ -89,15 +94,16 @@ class MainApp(FloatLayout):
         audica_file = ZipFile(self.selected_file)
         audica_file.extractall("temp")
         song_files = [f for f in os.listdir("temp") if os.path.isfile(os.path.join("temp", f))]
-        tempo = 0
+        for song_file in song_files:
+            if song_file[-4:] == ".mid":
+                self.status_label.text = "Creating MIDI file with new tempo..."
+                self.tempo = self.percentage(int(self.speed_input.text), float(functions.get_tempo("temp" + os.sep + "song.desc")))
+                functions.change_midi_speed("temp" + os.sep + song_file, new_songID + os.sep + song_file, self.tempo)
+                break
         for song_file in song_files:
             if song_file[-9:] == ".moggsong" or song_file[-5:] == ".cues":
                 self.status_label.text = "Moving " + song_file + "..."
                 shutil.move("temp" + os.sep + song_file, new_songID + os.sep + song_file)
-            if song_file[-4:] == ".mid":
-                self.status_label.text = "Creating MIDI file with new tempo..."
-                tempo = self.percentage(int(self.speed_input.text), float(functions.get_tempo("temp" + os.sep + "song.desc")))
-                functions.change_midi_speed("temp" + os.sep + song_file, new_songID + os.sep + song_file, tempo)
             if song_file[-5:] == ".mogg":
                 self.status_label.text = "Modifying " + song_file + " with new tempo..."
                 if self.magician_mode == True:
@@ -108,7 +114,7 @@ class MainApp(FloatLayout):
                 functions.ogg2mogg("temp" + os.sep + song_file[:-5] + "new.ogg", new_songID + os.sep + song_file)
             if song_file[-5:] == ".desc":
                 self.status_label.text = "Modifying the song.desc file..."
-                functions.save_new_desc("temp" + os.sep + song_file, new_songID + os.sep + song_file, self.speed_input.text, tempo)
+                functions.save_new_desc("temp" + os.sep + song_file, new_songID + os.sep + song_file, self.speed_input.text, self.tempo)
         self.status_label.text = "Creating new .audica file with the new files..."
         if os.path.exists("OUTPUT"):
             if os.path.isfile("OUTPUT" + os.sep + new_songID + ".audica"):
@@ -124,6 +130,7 @@ class MainApp(FloatLayout):
         shutil.rmtree("temp")
         shutil.rmtree(new_songID)
         self.status_label.text = "DONE! Your new audica file should be in the OUTPUT folder!"
+        self.tempo = 0
         self.start_button.disabled = False
             
     def percentage(self, percent, whole):
@@ -131,7 +138,7 @@ class MainApp(FloatLayout):
             
     def not_a_magician(self):
         self.status_label.text = "You are not a magician..."
-        self.filename_label.text = ""
+        self.filename_label.text = "Drag and drop an .audica file..."
         self.selected_file = ""
         self.magician_mode = False
         
@@ -160,6 +167,7 @@ class MainApp(FloatLayout):
             self.magician_mode = False
         else:
             self.selected_file = ""
+            self.filename_label.text = "Drag and drop an .audica file..."
             self.status_label.text = ""
             self.magician_mode = False
 
